@@ -17,6 +17,13 @@ function _install_packages()
 	local opts = {}
 	local plugins = {
 		{
+			"folke/tokyonight.nvim",
+			lazy = false,
+			config = function() 
+				vim.cmd[[colorscheme tokyonight-night]]
+			end
+		},
+		{
 			"voldikss/vim-floaterm",
 			keys = {
 				{ "<leader>t", vim.cmd.FloatermToggle, desc = "Float Terminal" },
@@ -25,6 +32,9 @@ function _install_packages()
 				vim.g.floaterm_title = "[ SHELL ]"
 				vim.g.floaterm_width = 0.9;
 				vim.g.floaterm_height = 0.9
+				vim.g.floaterm_borderchars = '-       '
+				vim.cmd[[hi Floaterm guibg=black]]
+				vim.cmd[[hi FloatermBorder guibg=black guifg=white]]
 			end
 		},
 		{
@@ -130,7 +140,7 @@ function _setup_vim_options()
 
 	opts.rnu = true
 
-	vim.cmd [[colorscheme murphy]]
+	-- vim.cmd [[colorscheme murphy]]
 end
 
 function main()
