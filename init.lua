@@ -1,3 +1,10 @@
+local packpath = vim.fn.stdpath("data") .. "/packer/packer.nvim"
+if not vim.loop.fs_stat(packpath) then
+  vim.fn.system({ "git", "clone", "--filter=blob:none", "https://github.com/wbthomason/packer.nvim", "--branch=master", packpath })
+end
+
+vim.opt.rtp:prepend(packpath)
+
 vim.g.mapleader = " "
 
 -- let packer does all thing
