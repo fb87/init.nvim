@@ -18,13 +18,6 @@ function _install_packages()
 		local opts = {}
 		local plugins = {
 				{
-						"folke/tokyonight.nvim",
-						lazy = false,
-						config = function() 
-								vim.cmd[[colorscheme tokyonight-night]]
-						end
-				},
-				{
 						"voldikss/vim-floaterm",
 						lazy = false,
 						keys = {
@@ -172,8 +165,13 @@ end
 
 function _setup_vim_options()
 		local opts = vim.opt
+		local apis = vim.api
 
 		opts.rnu = true
+		apis.nvim_set_hl(0, 'FloatBorder', {bg='#3B4252', fg='#5E81AC'})
+		apis.nvim_set_hl(0, 'NormalFloat', {bg='#3B4252'})
+		apis.nvim_set_hl(0, 'TelescopeNormal', {bg='#3B4252'})
+		apis.nvim_set_hl(0, 'TelescopeBorder', {bg='#3B4252'})
 end
 
 function main()
