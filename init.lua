@@ -154,6 +154,7 @@ function _install_packages()
             end
         },
         { 'vimwiki/vimwiki' },
+        { 'stsewd/sphinx.nvim' },
     }
     require("lazy").setup(plugins, opts)
 end
