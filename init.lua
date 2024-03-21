@@ -78,7 +78,7 @@ function _install_packages()
             end,
         },
         {
-            'nvim-telescope/telescope.nvim', tag = '0.1.1',
+            'nvim-telescope/telescope.nvim', tag = '0.1.6',
             dependencies = { 'nvim-lua/plenary.nvim' },
             keys = {
                 { "<leader>pf", "<cmd>Telescope find_files<cr>" },
