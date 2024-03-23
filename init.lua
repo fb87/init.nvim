@@ -246,6 +246,8 @@ function _setup_vim_options()
     vim.cmd [[TwilightEnable]]
 
     opts.rnu = true
+    -- reduce timeout between leader key to action
+    opts.timeoutlen = 250 -- or 500 (Default: 1000)
 end
 
 function main()
