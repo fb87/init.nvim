@@ -17,6 +17,14 @@ function _install_packages()
 
     local opts = {}
     local plugins = {
+        { 
+            "rose-pine/neovim", name = "rose-pine",
+            config = function()
+                require("rose-pine").setup({
+                    variant = "main"
+                })
+            end
+        },
         {
             'akinsho/toggleterm.nvim', version = "*", config = true,
             keys = {
@@ -168,8 +176,9 @@ end
 function _setup_vim_options()
     local opts = vim.opt
 
+    vim.cmd [[colorscheme rose-pine-moon]]
+
     opts.rnu = true
-    vim.cmd [[colorscheme murphy]]
 end
 
 function main()
