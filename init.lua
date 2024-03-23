@@ -18,36 +18,15 @@ function _install_packages()
     local opts = {}
     local plugins = {
         {
-            "folke/tokyonight.nvim",
-            lazy = false,
-            config = function() 
-                vim.cmd[[colorscheme tokyonight-night]]
-            end
+            'akinsho/toggleterm.nvim', version = "*", config = true,
+            keys = {
+                { "<leader>jk", "<cmd>ToggleTerm direction=float<cr>", desc = "Toggle Terminal" },
+            }
         },
         {
-            "voldikss/vim-floaterm",
-            lazy = false,
+            "nvim-neo-tree/neo-tree.nvim", branch="v3.x",
             keys = {
-                { "<leader>jk", "<cmd>FloatermToggle<cr>", desc = "Toggle Float Terminal" },
-                { "<leader>mt", "<cmd>FloatermNew --autoclose=0 make<cr>"},
-                { "<leader>st", "<cmd>FloatermNew --autoclose=0 nix-shell<cr>"},
-                { "<leader>bt", "<cmd>FloatermNew --autoclose=0 nix build<cr>"},
-            },
-            config = function() 
-                vim.g.floaterm_title = ""
-                vim.g.floaterm_width = 0.9;
-                vim.g.floaterm_height = 0.9
-                vim.g.floaterm_borderchars = ''
-                -- vim.g.floaterm_borderchars = '-       '
-                vim.g.floaterm_opener = "edit"
-                vim.cmd[[hi Floaterm guibg=black]]
-                vim.cmd[[hi FloatermBorder guibg=black guifg=white]]
-            end
-        },
-        {
-            "nvim-neo-tree/neo-tree.nvim", branch = "v2.x",
-            keys = {
-                { "<leader>e", "<cmd>NeoTreeFloatToggle<cr>", desc = "Neotree" },
+                { "<leader>e", "<cmd>Neotree toggle<cr>", desc = "Neotree" },
             },
             dependencies = { 
                 "nvim-lua/plenary.nvim",
@@ -55,16 +34,15 @@ function _install_packages()
                 "MunifTanjim/nui.nvim",
             },
             config = function()
-                require("neo-tree").setup()
+                require("neo-tree").setup({
+                    popup_border_style = "rounded"
+                })
             end,
         },
         {
             "nvim-treesitter/nvim-treesitter",
             lazy = false,
             cmd = "TSUpdate",
-            keys = {
-                { "<leader>e", "<cmd>NeoTreeFloatToggle<cr>", desc = "Treesitter" },
-            },
             config = function()
                 require'nvim-treesitter.configs'.setup {
                     ensure_installed = { "c", "nix", "python", "cmake", "lua", "vim", "vimdoc", "dart" },
@@ -178,7 +156,7 @@ end
 function _setup_key_binding()
     local keys = vim.keymap
 
-    keys.set("t", "<leader>jk", vim.cmd.FloatermToggle)
+    keys.set("t", "<leader>jk", "<cmd>ToggleTerm<cr>")
     keys.set("t", "jk", [[<C-\><C-n>]])
 
     keys.set("n", "<leader>c", vim.cmd.bd)
@@ -191,6 +169,7 @@ function _setup_vim_options()
     local opts = vim.opt
 
     opts.rnu = true
+    vim.cmd [[colorscheme murphy]]
 end
 
 function main()
