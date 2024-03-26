@@ -25,12 +25,14 @@ function _install_packages()
                 })
             end
         },
+
         {
             'akinsho/toggleterm.nvim', version = "*", config = true,
             keys = {
                 { "<leader>jk", "<cmd>ToggleTerm direction=float<cr>", desc = "Toggle Terminal" },
             }
         },
+
         {
             "nvim-neo-tree/neo-tree.nvim", branch="v3.x",
             keys = {
@@ -47,6 +49,7 @@ function _install_packages()
                 })
             end,
         },
+
         {
             "nvim-treesitter/nvim-treesitter",
             lazy = false,
@@ -63,6 +66,7 @@ function _install_packages()
                 }
             end,
         },
+
         {
             'nvim-telescope/telescope.nvim', tag = '0.1.6',
             dependencies = { 'nvim-lua/plenary.nvim' },
@@ -72,6 +76,7 @@ function _install_packages()
                 { "<leader>ps", "<cmd>Telescope grep_string<cr>" },
             }
         },
+
         {
             'ThePrimeagen/harpoon',
             keys = {
@@ -81,6 +86,7 @@ function _install_packages()
                 { "<leader>m", "<cmd>:lua require('harpoon.ui').toggle_quick_menu()<cr>" },
             }
         },
+
         {
             'VonHeikemen/lsp-zero.nvim',
             branch = 'v1.x',
@@ -103,6 +109,7 @@ function _install_packages()
                 'L3MON4D3/LuaSnip',
                 'rafamadriz/friendly-snippets',
             },
+
             config = function() 
                 local lsp = require('lsp-zero').preset({})
                 lsp.on_attach(function(client, bufnr)
@@ -135,7 +142,7 @@ function _install_packages()
                         ['<C-f>'] = cmp.mapping.scroll_docs(4),
                         ['<C-Space>'] = cmp.mapping.complete(),
                         ['<C-e>'] = cmp.mapping.abort(),
-                        ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+                        ['<CR>'] = cmp.mapping.confirm({ select = true }),
                     }),
                     sources = cmp.config.sources({
                         { name = 'nvim_lsp' },
@@ -200,31 +207,44 @@ function _install_packages()
                 'folke/zen-mode.nvim' 
             },
             config = function()
+                require("zen-mode").setup({
+                    window = {
+                        width = .95 -- width will be 85% of the editor width
+                    }
+                })
+
                 require('twilight').setup({
                     dimming = {
-                        alpha = 0.25, -- amount of dimming
-                        -- we try to get the foreground from the highlight groups or fallback color
+                        alpha = 0.25,
                         color = { "Normal", "#ffffff" },
-                        term_bg = "#000000", -- if guibg=NONE, this will be used to calculate text color
-                        inactive = false, -- when true, other windows will be fully dimmed (unless they contain the same buffer)
+                        term_bg = "#000000",
+                        inactive = false,
                     },
-                    context = 10, -- amount of lines we will try to show around the current line
-                    treesitter = true, -- use treesitter when available for the filetype
-                    -- treesitter is used to automatically expand the visible text,
-                    -- but you can further control the types of nodes that should always be fully expanded
-                    expand = { -- for treesitter, we we always try to expand to the top-most ancestor with these types
-                    "function",
-                    "method",
-                    "table",
-                    "if_statement",
-                },
-                exclude = {}, -- exclude these filetypes
-            })
-        end
-    },
-    { 'fedepujol/bracketpair.nvim' }
-}
-require("lazy").setup(plugins, opts)
+                    context = 10,
+                    treesitter = true,
+                    expand = {
+                        "function",
+                        "method",
+                        "table",
+                        "if_statement",
+                    },
+                })
+            end
+        },
+
+        {
+            "m4xshen/hardtime.nvim",
+            dependencies = { "MunifTanjim/nui.nvim", "nvim-lua/plenary.nvim" },
+            opts = { max_time = 2000 },
+            config = function()
+                require('hardtime').setup()
+            end
+        },
+
+    }
+
+    require("lazy").setup(plugins, opts)
+
 end
 
 function _setup_key_binding()
@@ -242,7 +262,7 @@ end
 function _setup_vim_options()
     local opts = vim.opt
 
-    vim.cmd [[colorscheme rose-pine-moon]]
+    vim.cmd [[colorscheme default]]
     vim.cmd [[TwilightEnable]]
 
     opts.rnu = true
