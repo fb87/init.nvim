@@ -15,8 +15,13 @@ function _install_packages()
     end
     vim.opt.rtp:prepend(lazypath)
 
-    local opts = {}
+    local opts = { default = { lockfile = vim.fn.stdpath("config") .. "/lazy-lock.json", } }
     local plugins = {
+        {
+            "NStefan002/screenkey.nvim",
+            lazy = false,
+            version = "*",
+        },
         { 
             "rose-pine/neovim", name = "rose-pine",
             config = function()
@@ -248,11 +253,12 @@ function _setup_vim_options()
     local opts = vim.opt
 
     vim.cmd [[colorscheme rose-pine-moon]]
-    vim.cmd [[TwilightEnable]]
+    vim.cmd [[TwilightDisable]]
+    vim.cmd [[Screenkey toggle]]
 
     opts.rnu = true
     -- reduce timeout between leader key to action
-    opts.timeoutlen = 250 -- or 500 (Default: 1000)
+    opts.timeoutlen = 500 -- or 500 (Default: 1000)
 end
 
 function main()
