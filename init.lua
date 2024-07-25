@@ -27,6 +27,11 @@ function _install_packages()
             config = function()
                 require("rose-pine").setup({
                     variant = "main"
+                    styles = {
+                        bold = true,
+                        italic = false,
+                        transparency = false,
+                    },
                 })
             end
         },
@@ -74,7 +79,7 @@ function _install_packages()
             end,
         },
         {
-            'nvim-telescope/telescope.nvim', tag = '0.1.6',
+            'nvim-telescope/telescope.nvim',
             dependencies = { 'nvim-lua/plenary.nvim' },
             keys = {
                 { "<leader>pf", "<cmd>Telescope find_files<cr>" },
@@ -252,7 +257,7 @@ end
 function _setup_vim_options()
     local opts = vim.opt
 
-    vim.cmd [[colorscheme rose-pine-moon]]
+    vim.cmd [[colorscheme rose-pine-main]]
     vim.cmd [[TwilightDisable]]
     vim.cmd [[Screenkey toggle]]
 
