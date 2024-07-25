@@ -31,7 +31,7 @@ function _install_packages()
                         bold = true,
                         italic = false,
                         transparency = false,
-                    },
+                    }
                 })
             end
         },
