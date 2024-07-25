@@ -26,7 +26,7 @@ function _install_packages()
             "rose-pine/neovim", name = "rose-pine",
             config = function()
                 require("rose-pine").setup({
-                    variant = "main"
+                    variant = "main",
                     styles = {
                         bold = true,
                         italic = false,
