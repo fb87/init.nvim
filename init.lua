@@ -257,6 +257,7 @@ function _install_packages()
     }
   }
   require("lazy").setup(plugins, opts)
+  require'lspconfig'.nixd.setup{}
 end
 
 function _setup_key_binding()
