@@ -237,24 +237,24 @@ function _install_packages()
             })
         end
     },
-    { "frankroeder/parrot.nvim",
-      dependencies = { "ibhagwan/fzf-lua" },
-      config = function()
-        require("parrot").setup {
-          providers = {
-            ollama = {
-              endpoint = "http://localhost:11434/api/chat",
-              topic_prompt = [[
-              Summarize the chat above and only provide a short headline of 2 to 3
-              words without any opening phrase like "Sure, here is the summary",
-              "Sure! Here's a shortheadline summarizing the chat" or anything similar.
-              ]],
-              topic_model = "llama3.2:latest",
-            },
-          },
-        }
-      end
-    }
+    -- { "frankroeder/parrot.nvim",
+    --   dependencies = { "ibhagwan/fzf-lua" },
+    --   config = function()
+    --     require("parrot").setup {
+    --       providers = {
+    --         ollama = {
+    --           endpoint = "http://localhost:11434/api/chat",
+    --           topic_prompt = [[
+    --           Summarize the chat above and only provide a short headline of 2 to 3
+    --           words without any opening phrase like "Sure, here is the summary",
+    --           "Sure! Here's a shortheadline summarizing the chat" or anything similar.
+    --           ]],
+    --           topic_model = "llama3.2:latest",
+    --         },
+    --       },
+    --     }
+    --   end
+    -- }
   }
   require("lazy").setup(plugins, opts)
   require'lspconfig'.nixd.setup{}
