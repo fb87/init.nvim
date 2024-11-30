@@ -42,27 +42,6 @@ function _install_packages()
             }
         },
         {
-            "nvim-neo-tree/neo-tree.nvim", branch="v3.x",
-            keys = {
-                { "<leader>e", "<cmd>Neotree toggle<cr>", desc = "Neotree" },
-            },
-            dependencies = { 
-                "nvim-lua/plenary.nvim",
-                "nvim-tree/nvim-web-devicons",
-                "MunifTanjim/nui.nvim",
-            },
-            config = function()
-                require("neo-tree").setup({
-                    event_handlers = {{
-                        event = "file_opened",
-                        handler = function(file_path)
-                          require("neo-tree.command").execute({ action = "close" })
-                        end
-                    },}
-                })
-            end,
-        },
-        {
             "nvim-treesitter/nvim-treesitter",
             lazy = false,
             cmd = "TSUpdate",
@@ -127,18 +106,17 @@ function _install_packages()
                 lsp.setup()
 
                 -- setup autocomplete
-
-                local cmp = require'cmp'
+                local cmp = require('cmp')
 
                 cmp.setup({
                     snippet = {
                         -- REQUIRED - you must specify a snippet engine
                         expand = function(args)
                             vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
-                            -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+                            require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
                             -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
                             -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
-                            -- vim.snippet.expand(args.body) -- For native neovim snippets (Neovim v0.10+)
+                            vim.snippet.expand(args.body) -- For native neovim snippets (Neovim v0.10+)
                         end,
                     },
                     window = {
@@ -155,7 +133,7 @@ function _install_packages()
                     sources = cmp.config.sources({
                         { name = 'nvim_lsp' },
                         { name = 'vsnip' }, -- For vsnip users.
-                        -- { name = 'luasnip' }, -- For luasnip users.
+                        { name = 'luasnip' }, -- For luasnip users.
                         -- { name = 'ultisnips' }, -- For ultisnips users.
                         -- { name = 'snippy' }, -- For snippy users.
                     }, {
@@ -164,100 +142,55 @@ function _install_packages()
                 })
             end
         },
-        {
-            'fb87/flutter-tools.nvim', branch = "support_nested_dart_sdk",
-            lazy = false,
-            keys = {
-                { "<leader>fr", "<cmd>FlutterRun<cr>" }
-            },
-            dependencies = {
-                'nvim-lua/plenary.nvim',
-            },
-            config = function()
-                require('flutter-tools').setup({
-                    settings = {
-                        showTodos = true,
-                        completeFunctionCalls = true,
-                        enableSnippets  = true,
-                        updateImportsOnRename = true,
-                    },
-                    decorations = {
-                        statusline = {
-                            app_version = true,
-                            device = true
-                        }
-                    },
-                })
-            end
-        },
+
         { 'vimwiki/vimwiki' },
-        { 'stsewd/sphinx.nvim' },
-
-        {
-            "folke/noice.nvim",
-            event = "VeryLazy",
-            opts = {
-                -- add any options here
+        { 'stevearc/oil.nvim', dependencies = { { "echasnovski/mini.icons", opts = {} } },
+        config = function() require("oil").setup({
+            columns = {
+                "icon",
+                "permissions",
+                "size",
+                "mtime",
             },
-            dependencies = {
-                -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
-                "MunifTanjim/nui.nvim",
-                -- OPTIONAL:
-                --   `nvim-notify` is only needed, if you want to use the notification view.
-                --   If not available, we use `mini` as the fallback
-                "rcarriga/nvim-notify",
-            }
-        },
 
-        { 
-            'folke/twilight.nvim' ,
-            dependencies = {
-                'folke/zen-mode.nvim' 
-            },
-            config = function()
-                require('twilight').setup({
-                    dimming = {
-                        alpha = 0.25, -- amount of dimming
-                        -- we try to get the foreground from the highlight groups or fallback color
-                        color = { "Normal", "#ffffff" },
-                        term_bg = "#000000", -- if guibg=NONE, this will be used to calculate text color
-                        inactive = false, -- when true, other windows will be fully dimmed (unless they contain the same buffer)
-                    },
-                    context = 10, -- amount of lines we will try to show around the current line
-                    treesitter = true, -- use treesitter when available for the filetype
-                    -- treesitter is used to automatically expand the visible text,
-                    -- but you can further control the types of nodes that should always be fully expanded
-                    expand = { -- for treesitter, we we always try to expand to the top-most ancestor with these types
-                    "function",
-                    "method",
-                    "table",
-                    "if_statement",
+            float = {
+                -- Padding around the floating window
+                padding = 10,
+                max_width = 0,
+                max_height = 0,
+                border = "rounded",
+                win_options = {
+                    winblend = 0,
                 },
-                exclude = {}, -- exclude these filetypes
-            })
-        end
-    },
-    -- { "frankroeder/parrot.nvim",
-    --   dependencies = { "ibhagwan/fzf-lua" },
-    --   config = function()
-    --     require("parrot").setup {
-    --       providers = {
-    --         ollama = {
-    --           endpoint = "http://localhost:11434/api/chat",
-    --           topic_prompt = [[
-    --           Summarize the chat above and only provide a short headline of 2 to 3
-    --           words without any opening phrase like "Sure, here is the summary",
-    --           "Sure! Here's a shortheadline summarizing the chat" or anything similar.
-    --           ]],
-    --           topic_model = "llama3.2:latest",
-    --         },
-    --       },
-    --     }
-    --   end
-    -- }
-  }
-  require("lazy").setup(plugins, opts)
-  require'lspconfig'.nixd.setup{}
+                -- optionally override the oil buffers window title with custom function: fun(winid: integer): string
+                get_win_title = nil,
+                -- preview_split: Split direction: "auto", "left", "right", "above", "below".
+                preview_split = "auto",
+                -- This is the config that will be passed to nvim_open_win.
+                -- Change values here to customize the layout
+                override = function(conf)
+                    return conf
+                end,
+            },
+
+            -- Configuration for the file preview window
+            preview_win = {
+                -- Whether the preview window is automatically updated when the cursor is moved
+                update_on_cursor_moved = true,
+                -- How to open the preview window "load"|"scratch"|"fast_scratch"
+                preview_method = "fast_scratch",
+                -- A function that returns true to disable preview on a file e.g. to avoid lag
+                disable_preview = function(filename)
+                    return false
+                end,
+                -- Window-local options to use for preview window buffers
+                win_options = {},
+            },
+        }) end },
+    }
+
+    require("lazy").setup(plugins, opts)
+    require'lspconfig'.nixd.setup{}
 end
 
 function _setup_key_binding()
@@ -267,6 +200,7 @@ function _setup_key_binding()
     keys.set("t", "jk", [[<C-\><C-n>]])
 
     keys.set("n", "<leader>c", vim.cmd.bd)
+    keys.set("n", "<leader>e", "<cmd>Oil --float<CR>")
     keys.set("n", "<leader><leader>", function()
         vim.cmd("so")
     end)
@@ -276,7 +210,6 @@ function _setup_vim_options()
     local opts = vim.opt
 
     vim.cmd [[colorscheme rose-pine-main]]
-    vim.cmd [[TwilightDisable]]
     vim.cmd [[Screenkey toggle]]
 
     opts.rnu = true
