@@ -1,294 +1,150 @@
 -- vim: tabstop=4 autoindent tabstop=4 shiftwidth=4 expandtab
-vim.g.mapleader = " "
 
-function _install_packages()
-    local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-    if not vim.loop.fs_stat(lazypath) then
-        vim.fn.system({
-            "git",
-            "clone",
-            "--filter=blob:none",
-            "https://github.com/folke/lazy.nvim.git",
-            "--branch=stable", -- latest stable release
-            lazypath,
-        })
+vim.g.mapleader = " "					-- sets leader key
+vim.g.netrw_banner = 0					-- gets rid of the annoying banner for netrw
+vim.g.netrw_browse_split=4				-- open in prior window
+vim.g.netrw_altv = 1					-- change from left splitting to right splitting
+vim.g.netrw_liststyle=1					-- tree style view in netrw
+vim.opt.title = true					-- show title
+vim.opt.syntax = "ON"
+vim.opt.backup = false
+vim.opt.compatible = false				-- turn off vi compatibility mode
+vim.opt.number = true					-- turn on line numbers
+vim.opt.relativenumber = true				-- turn on relative line numbers
+vim.opt.mouse = 'a'						-- enable the mouse in all modes
+vim.opt.ignorecase = true				-- enable case insensitive searching
+vim.opt.smartcase = true				-- all searches are case insensitive unless there's a capital letter
+vim.opt.hlsearch = false				-- disable all highlighted search results
+vim.opt.incsearch = true				-- enable incremental searching
+vim.opt.wrap = true						-- enable text wrapping
+vim.opt.tabstop = 4						-- tabs=4spaces
+vim.opt.shiftwidth = 4
+vim.opt.fileencoding = "utf-8"				-- encoding set to utf-8
+vim.opt.pumheight = 10					-- number of items in popup menu
+vim.opt.showtabline = 2					-- always show the tab line
+vim.opt.laststatus = 2					-- always show statusline
+vim.opt.signcolumn = "auto"
+vim.opt.expandtab = false				-- expand tab 
+vim.opt.smartindent = true
+vim.opt.showcmd = true
+vim.opt.cmdheight = 2
+vim.opt.showmode = true
+vim.opt.scrolloff = 8					-- scroll page when cursor is 8 lines from top/bottom
+vim.opt.sidescrolloff = 8				-- scroll page when cursor is 8 spaces from left/right
+vim.opt.clipboard = unnamedplus
+vim.opt.completeopt= { "menuone", "noselect" }
+vim.opt.splitbelow = true				-- split go below
+vim.opt.splitright = true				-- vertical split to the right
+vim.opt.termguicolors = true			-- terminal gui colors
+vim.cmd [[
+	set path+=**
+	filetype plugin on
+	set wildmenu
+	colorscheme murphy
+	:autocmd BufWritePost *.h !make 
+	command! Reload :source ~/.config/nvim/init.lua
+	command! Make :!make 
+]]
+--statusline
+vim.cmd "highlight StatusType guibg=#b16286 guifg=#1d2021"
+vim.cmd "highlight StatusFile guibg=#fabd2f guifg=#1d2021"
+vim.cmd "highlight StatusModified guibg=#1d2021 guifg=#d3869b"
+vim.cmd "highlight StatusBuffer guibg=#98971a guifg=#1d2021"
+vim.cmd "highlight StatusLocation guibg=#458588 guifg=#1d2021"
+vim.cmd "highlight StatusPercent guibg=#1d2021 guifg=#ebdbb2"
+vim.cmd "highlight StatusNorm guibg=none guifg=white"
+vim.o.statusline = " "
+				.. ""
+				.. " "
+				.. "%l"
+				.. " "
+				.. " %#StatusType#"
+				.. "<< "
+				.. "%Y" 
+				.. "  "
+				.. " >>"
+				.. "%#StatusFile#"
+				.. "<< "
+				.. "%F"
+				.. " >>"
+				.. "%#StatusModified#"
+				.. " "
+				.. "%m"
+				.. " "
+				.. "%#StatusNorm#"
+				.. "%="
+				.. "%#StatusBuffer#"
+				.. "<< "
+				.. "﬘ "
+				.. "%n"
+				.. " >>"
+				.. "%#StatusLocation#"
+				.. "<< "
+				.. "燐 "
+				.. "%l,%c"
+				.. " >>"
+				.. "%#StatusPercent#"
+				.. "<< "
+				.. "%p%%  "
+				.. " >> "
+
+-- Functional wrapper for mapping custom keybindings
+function map(mode, lhs, rhs, opts)
+    local options = { noremap = true }
+    if opts then
+        options = vim.tblextend("force", options, opts)
     end
-    vim.opt.rtp:prepend(lazypath)
-
-    local opts = { default = { lockfile = vim.fn.stdpath("data") .. "/lazy-lock.json", } }
-    local plugins = {
-        {
-            "NStefan002/screenkey.nvim",
-            lazy = false,
-            version = "*",
-        },
-        { 
-            "rose-pine/neovim", name = "rose-pine",
-            config = function()
-                require("rose-pine").setup({
-                    variant = "main",
-                    styles = {
-                        bold = true,
-                        italic = false,
-                        transparency = false,
-                    }
-                })
-            end
-        },
-        {
-            'akinsho/toggleterm.nvim', version = "*", config = true,
-            keys = {
-                { "<leader>jk", "<cmd>ToggleTerm direction=float<cr>", desc = "Toggle Terminal" },
-            }
-        },
-        {
-            "nvim-neo-tree/neo-tree.nvim", branch="v3.x",
-            keys = {
-                { "<leader>e", "<cmd>Neotree toggle<cr>", desc = "Neotree" },
-            },
-            dependencies = { 
-                "nvim-lua/plenary.nvim",
-                "nvim-tree/nvim-web-devicons",
-                "MunifTanjim/nui.nvim",
-            },
-            config = function()
-                require("neo-tree").setup({
-                    event_handlers = {{
-                        event = "file_opened",
-                        handler = function(file_path)
-                          require("neo-tree.command").execute({ action = "close" })
-                        end
-                    },}
-                })
-            end,
-        },
-        {
-            "nvim-treesitter/nvim-treesitter",
-            lazy = false,
-            cmd = "TSUpdate",
-            config = function()
-                require'nvim-treesitter.configs'.setup {
-                    ensure_installed = { "c", "nix", "python", "cmake", "lua", "vim", "vimdoc", "dart" },
-                    sync_install = false,
-                    auto_install = true,
-                    highlight = {
-                        enable = true,
-                        additional_vim_regex_highlighting = false,
-                    },
-                }
-            end,
-        },
-        {
-            'nvim-telescope/telescope.nvim',
-            dependencies = { 'nvim-lua/plenary.nvim' },
-            keys = {
-                { "<leader>pf", "<cmd>Telescope find_files<cr>" },
-                { "<leader>pg", "<cmd>Telescope git_files<cr>" },
-                { "<leader>ps", "<cmd>Telescope grep_string<cr>" },
-            }
-        },
-        {
-            'ThePrimeagen/harpoon',
-            keys = {
-                { "<leader>a", "<cmd>:lua require('harpoon.mark').add_file()<cr>" },
-                { "<leader>j", "<cmd>:lua require('harpoon.ui').nav_next()<cr>" },
-                { "<leader>k", "<cmd>:lua require('harpoon.ui').nav_prev()<cr>" },
-                { "<leader>m", "<cmd>:lua require('harpoon.ui').toggle_quick_menu()<cr>" },
-            }
-        },
-        {
-            'VonHeikemen/lsp-zero.nvim',
-            branch = 'v1.x',
-            lazy = false,
-            dependencies = {
-                -- LSP Support
-                'neovim/nvim-lspconfig',
-                'williamboman/mason.nvim',
-                'williamboman/mason-lspconfig.nvim',
-
-                -- Autocompletion
-                'hrsh7th/nvim-cmp',
-                'hrsh7th/cmp-buffer',
-                'hrsh7th/cmp-path',
-                'saadparwaiz1/cmp_luasnip',
-                'hrsh7th/cmp-nvim-lsp',
-                'hrsh7th/cmp-nvim-lua',
-
-                -- Snippets
-                'L3MON4D3/LuaSnip',
-                'rafamadriz/friendly-snippets',
-            },
-            config = function() 
-                local lsp = require('lsp-zero').preset({})
-                lsp.on_attach(function(client, bufnr)
-                    lsp.default_keymaps({buffer = bufnr})
-                end)
-
-                lsp.setup()
-
-                -- setup autocomplete
-
-                local cmp = require'cmp'
-
-                cmp.setup({
-                    snippet = {
-                        -- REQUIRED - you must specify a snippet engine
-                        expand = function(args)
-                            vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
-                            -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
-                            -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
-                            -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
-                            -- vim.snippet.expand(args.body) -- For native neovim snippets (Neovim v0.10+)
-                        end,
-                    },
-                    window = {
-                        -- completion = cmp.config.window.bordered(),
-                        -- documentation = cmp.config.window.bordered(),
-                    },
-                    mapping = cmp.mapping.preset.insert({
-                        ['<C-b>'] = cmp.mapping.scroll_docs(-4),
-                        ['<C-f>'] = cmp.mapping.scroll_docs(4),
-                        ['<C-Space>'] = cmp.mapping.complete(),
-                        ['<C-e>'] = cmp.mapping.abort(),
-                        ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-                    }),
-                    sources = cmp.config.sources({
-                        { name = 'nvim_lsp' },
-                        { name = 'vsnip' }, -- For vsnip users.
-                        -- { name = 'luasnip' }, -- For luasnip users.
-                        -- { name = 'ultisnips' }, -- For ultisnips users.
-                        -- { name = 'snippy' }, -- For snippy users.
-                    }, {
-                        { name = 'buffer' },
-                    })
-                })
-            end
-        },
-        {
-            'fb87/flutter-tools.nvim', branch = "support_nested_dart_sdk",
-            lazy = false,
-            keys = {
-                { "<leader>fr", "<cmd>FlutterRun<cr>" }
-            },
-            dependencies = {
-                'nvim-lua/plenary.nvim',
-            },
-            config = function()
-                require('flutter-tools').setup({
-                    settings = {
-                        showTodos = true,
-                        completeFunctionCalls = true,
-                        enableSnippets  = true,
-                        updateImportsOnRename = true,
-                    },
-                    decorations = {
-                        statusline = {
-                            app_version = true,
-                            device = true
-                        }
-                    },
-                })
-            end
-        },
-        { 'vimwiki/vimwiki' },
-        { 'stsewd/sphinx.nvim' },
-
-        {
-            "folke/noice.nvim",
-            event = "VeryLazy",
-            opts = {
-                -- add any options here
-            },
-            dependencies = {
-                -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
-                "MunifTanjim/nui.nvim",
-                -- OPTIONAL:
-                --   `nvim-notify` is only needed, if you want to use the notification view.
-                --   If not available, we use `mini` as the fallback
-                "rcarriga/nvim-notify",
-            }
-        },
-
-        { 
-            'folke/twilight.nvim' ,
-            dependencies = {
-                'folke/zen-mode.nvim' 
-            },
-            config = function()
-                require('twilight').setup({
-                    dimming = {
-                        alpha = 0.25, -- amount of dimming
-                        -- we try to get the foreground from the highlight groups or fallback color
-                        color = { "Normal", "#ffffff" },
-                        term_bg = "#000000", -- if guibg=NONE, this will be used to calculate text color
-                        inactive = false, -- when true, other windows will be fully dimmed (unless they contain the same buffer)
-                    },
-                    context = 10, -- amount of lines we will try to show around the current line
-                    treesitter = true, -- use treesitter when available for the filetype
-                    -- treesitter is used to automatically expand the visible text,
-                    -- but you can further control the types of nodes that should always be fully expanded
-                    expand = { -- for treesitter, we we always try to expand to the top-most ancestor with these types
-                    "function",
-                    "method",
-                    "table",
-                    "if_statement",
-                },
-                exclude = {}, -- exclude these filetypes
-            })
-        end
-    },
-    { "frankroeder/parrot.nvim",
-      dependencies = { "ibhagwan/fzf-lua" },
-      config = function()
-        require("parrot").setup {
-          providers = {
-            ollama = {
-              endpoint = "http://localhost:11434/api/chat",
-              topic_prompt = [[
-              Summarize the chat above and only provide a short headline of 2 to 3
-              words without any opening phrase like "Sure, here is the summary",
-              "Sure! Here's a shortheadline summarizing the chat" or anything similar.
-              ]],
-              topic_model = "llama3.2:latest",
-            },
-          },
-        }
-      end
-    }
-  }
-  require("lazy").setup(plugins, opts)
-  require'lspconfig'.nixd.setup{}
+    vim.api.nvim_set_keymap(mode, lhs, rhs, options)
 end
 
-function _setup_key_binding()
-    local keys = vim.keymap
+-- reload config
+map("n", "<leader>r", ":source ~/.config/nvim/init.lua<CR>")	-- reload neovim config
 
-    keys.set("t", "<leader>jk", "<cmd>ToggleTerm<cr>")
-    keys.set("t", "jk", [[<C-\><C-n>]])
+-- Tab bindings 
+map("n", "<leader>t", ":tabnew<CR>")			-- space+t creates new tab
+map("n", "<leader>x", ":tabclose<CR>")			-- space+x closes current tab
+map("n", "<leader>j", ":tabprevious<CR>")		-- space+j moves to previous tab
+map("n", "<leader>k", ":tabnext<CR>")			-- space+k moves to next tab
 
-    keys.set("n", "<leader>c", vim.cmd.bd)
-    keys.set("n", "<leader><leader>", function()
-        vim.cmd("so")
-    end)
-end
+-- easy split generation
+map("n", "<leader>v", ":vsplit")				-- space+v creates a veritcal split
+map("n", "<leader>s", ":split")					-- space+s creates a horizontal split
 
-function _setup_vim_options()
-    local opts = vim.opt
+-- easy split navigation
+map("n", "<C-h>", "<C-w>h")						-- control+h switches to left split
+map("n", "<C-l>", "<C-w>l")						-- control+l switches to right split
+map("n", "<C-j>", "<C-w>j")						-- control+j switches to bottom split
+map("n", "<C-k>", "<C-w>k")						-- control+k switches to top split
 
-    vim.cmd [[colorscheme rose-pine-main]]
-    vim.cmd [[TwilightDisable]]
-    vim.cmd [[Screenkey toggle]]
+map("t", "<C-h>", "<C-\\><C-n><C-w>h")			-- control+h switches to left split
+map("t", "<C-l>", "<C-\\><C-n><C-w>l")						-- control+l switches to right split
+map("t", "<C-j>", "<C-\\><C-n><C-w>j")						-- control+j switches to bottom split
+map("t", "<C-k>", "<C-\\><C-n><C-w>k")						-- control+k switches to top split
 
-    opts.rnu = true
-    -- reduce timeout between leader key to action
-    opts.timeoutlen = 500 -- or 500 (Default: 1000)
-end
+-- terminal operations
+map("n", "<leader>jk", ":tab | term<CR>:set nornu nonu<CR>A")		-- switch to command mode
+map("t", "jk", "<C-\\><C-n>")					-- switch to command mode
 
-function main()
-    _install_packages()
-    _setup_vim_options()
-    _setup_key_binding()
-end
+-- buffer navigation
+map("n", "<Tab>", ":bnext <CR>")				-- Tab goes to next buffer
+map("n", "<S-Tab>", ":bprevious <CR>")			-- Shift+Tab goes to previous buffer
+map("n", "<leader>d", ":bd! <CR>")				-- Space+d delets current buffer
 
--- run everything
-main()
+-- adjust split sizes easier
+map("n", "<C-Left>", ":vertical resize +3<CR>")		-- Control+Left resizes vertical split +
+map("n", "<C-Right>", ":vertical resize -3<CR>")	-- Control+Right resizes vertical split -
+
+-- Open netrw in 25% split in tree view
+map("n", "<leader>e", ":25Lex<CR>")			-- space+e toggles netrw tree view 
+
+-- Easy way to get back to normal mode from home row
+map("i", "kj", "<Esc>")					-- kj simulates ESC
+map("i", "jk", "<Esc>")					-- jk simulates ESC
+
+-- Visual Maps
+map("v", "<leader>r", "\"hy:%s/<C-r>h//g<left><left>")			-- Replace all instances of highlighted words 
+map("v", "<C-s>", ":sort<CR>")									-- Sort highlighted text in visual mode with Control+S
+map("v", "J", ":m '>+1<CR>gv=gv")								-- Move current line down
+map("v", "K", ":m '>-2<CR>gv=gv")								-- Move current line up 
+
+
