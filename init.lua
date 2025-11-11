@@ -18,6 +18,9 @@ function _install_packages()
     local opts = { default = { lockfile = vim.fn.stdpath("data") .. "/lazy-lock.json", } }
     local plugins = {
         {
+            "gmml-org/llama.vim"
+        },
+        {
             "NStefan002/screenkey.nvim",
             lazy = false,
             version = "*",
