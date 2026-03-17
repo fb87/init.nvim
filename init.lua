@@ -36,8 +36,9 @@ function _install_packages()
     {
       'akinsho/toggleterm.nvim', version = "*", config = true,
       keys = {
-        { "<leader>jk", "<cmd>ToggleTerm direction=float<cr>",
-        desc = "Toggle Terminal" },
+        {  "<leader>jk", "<cmd> ToggleTerm size=45 direction=horizontal<cr>" },
+        { "1<leader>jk", "<cmd>1ToggleTerm size=45 direction=horizontal<cr>" },
+        { "2<leader>jk", "<cmd>2ToggleTerm size=45 direction=horizontal<cr>" },
       }
     },
     {
