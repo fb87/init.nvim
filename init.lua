@@ -77,15 +77,14 @@ function _install_packages()
 
         float = {
           -- Padding around the floating window
-          padding = 10,
+          padding = 2,
           max_width = 0,
           max_height = 0,
-          border = "rounded",
           win_options = {
             winblend = 0,
           },
           get_win_title = nil,
-          preview_split = "auto",
+          preview_split = "right",
           override = function(conf)
             return conf
           end,
@@ -114,7 +113,7 @@ function _setup_key_binding()
   keys.set("t", "jk", [[<C-\><C-n>]])
 
   keys.set("n", "<leader>c", vim.cmd.bd)
-  keys.set("n", "<leader>e", "<cmd>Oil --float<CR>")
+  keys.set("n", "<leader>e", "<cmd>lua require('oil').toggle_float()<CR>")
   keys.set("n", "<leader><leader>", function()
     vim.cmd("so")
   end)
@@ -130,10 +129,59 @@ function _setup_vim_options()
   opts.timeoutlen = 500 -- or 500 (Default: 1000)
 end
 
+function _setup_autocmd()
+  vim.api.nvim_create_autocmd("TermOpen", {
+    callback = function()
+      local function open_from_terminal()
+        local word = vim.fn.expand("<cWORD>")
+        if word == "" then return end
+
+        -- extract file, line, col (supports file:line:col)
+        local file, line, col = word:match("([^:]+):(%d+):?(%d*)")
+        if not file then file = word end
+
+        local fullpath = vim.fn.fnamemodify(file, ":p")
+        local is_file = vim.fn.filereadable(fullpath) == 1
+        local is_dir  = vim.fn.isdirectory(fullpath) == 1
+
+        if not is_file and not is_dir then
+          vim.notify("Not a file/folder: " .. fullpath, vim.log.levels.WARN)
+          return
+        end
+
+        -- normalize path (important for logs outside cwd)
+        file = vim.fn.fnamemodify(file, ":p")
+
+        -- switch to previous window (exit floating terminal)
+        vim.cmd("wincmd p")
+        vim.cmd("ToggleTerm")
+
+        if is_dir then
+          require("oil").open_float(fullpath)
+          return
+        end
+
+        if line then
+          vim.cmd("edit +" .. line .. " " .. file)
+          if col and col ~= "" then
+            vim.cmd("normal! " .. col .. "|")
+          end
+        else
+          vim.cmd("edit " .. file)
+        end
+      end
+
+      vim.keymap.set("n", "gf", open_from_terminal, { buffer = true })
+      vim.keymap.set("n", "<CR>", open_from_terminal, { buffer = true })
+    end,
+  })
+end
+
 function main()
   _install_packages()
   _setup_vim_options()
   _setup_key_binding()
+  _setup_autocmd()
 end
 
 -- run everything
