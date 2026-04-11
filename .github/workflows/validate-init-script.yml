@@ -1,0 +1,22 @@
+name: orangepi-5x-4xa76-4xa55
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate init.lua
+        run: |
+          output="$(nvim -u init.lua --headless +'lua vim.cmd("quit")' 2>&1 || true)"
+          printf '%s\n' "$output"
+          echo "$output" | grep -Eiq 'error|E[0-9]+:' && exit 1 || true
