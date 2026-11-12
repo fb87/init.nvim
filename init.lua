@@ -119,6 +119,26 @@ function _setup_key_binding()
   end)
 end
 
+-- zilch.nvim ships with the zilch agent and is provided by the Nix
+-- configuration as a 'start' package in the site packpath. Packages load
+-- after init.lua, so wait for VimEnter before asking for keymaps; pcall
+-- keeps a checkout without the plugin usable.
+function _setup_zilch()
+  vim.api.nvim_create_autocmd("VimEnter", {
+    callback = function()
+      local ok, zilch = pcall(require, "zilch")
+      if not ok then return end
+      zilch.setup({
+        keymaps = {
+          send = "<leader>zs",
+          code = "<leader>zc",
+          spec = "<leader>zp",
+        },
+      })
+    end,
+  })
+end
+
 function _setup_vim_options()
   local opts = vim.opt
 
@@ -182,6 +202,7 @@ function main()
   _setup_vim_options()
   _setup_key_binding()
   _setup_autocmd()
+  _setup_zilch()
 end
 
 -- run everything
