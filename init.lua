@@ -101,6 +101,23 @@ function _install_packages()
         },
       }
     ) end },
+    {
+      -- zilch.nvim ships with the zilch agent; the Nix configuration links it
+      -- into the site packpath and this entry loads it through lazy.
+      dir = vim.fn.stdpath("data") .. "/site/pack/zilch/start/zilch",
+      cond = function()
+        return vim.loop.fs_stat(vim.fn.stdpath("data") .. "/site/pack/zilch/start/zilch") ~= nil
+      end,
+      config = function()
+        require("zilch").setup({
+          keymaps = {
+            send = "<leader>zs",
+            code = "<leader>zc",
+            spec = "<leader>zp",
+          },
+        })
+      end,
+    },
   }
 
   require("lazy").setup(plugins, opts)
@@ -117,26 +134,6 @@ function _setup_key_binding()
   keys.set("n", "<leader><leader>", function()
     vim.cmd("so")
   end)
-end
-
--- zilch.nvim ships with the zilch agent and is provided by the Nix
--- configuration as a 'start' package in the site packpath. Packages load
--- after init.lua, so wait for VimEnter before asking for keymaps; pcall
--- keeps a checkout without the plugin usable.
-function _setup_zilch()
-  vim.api.nvim_create_autocmd("VimEnter", {
-    callback = function()
-      local ok, zilch = pcall(require, "zilch")
-      if not ok then return end
-      zilch.setup({
-        keymaps = {
-          send = "<leader>zs",
-          code = "<leader>zc",
-          spec = "<leader>zp",
-        },
-      })
-    end,
-  })
 end
 
 function _setup_vim_options()
@@ -202,7 +199,6 @@ function main()
   _setup_vim_options()
   _setup_key_binding()
   _setup_autocmd()
-  _setup_zilch()
 end
 
 -- run everything
