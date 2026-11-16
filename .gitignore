@@ -1,0 +1,5 @@
+# runtime directory created by the zilch agent
+.zilch/
+
+# nvim runtime log
+nvim.log
